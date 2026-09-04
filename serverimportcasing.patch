@@ -1,0 +1,117 @@
+diff -ruN '--exclude=node_modules' src_orig_backup/attentionscore.ts src/attentionscore.ts
+--- a/server/src/attentionscore.ts	2026-09-04 10:40:59.647108522 +0000
++++ b/server/src/attentionscore.ts	2026-09-04 11:03:26.874618831 +0000
+@@ -1,5 +1,5 @@
+ import { SYMBOL_MAP } from "./symbols.js";
+-import type { EnrichedQuote } from "./marketData/engine.js";
++import type { EnrichedQuote } from "./marketdata/engine.js";
+ import type { MarketEvent } from "./events.js";
+ 
+ // This is the product's core differentiator: instead of "price moved X%,"
+diff -ruN '--exclude=node_modules' src_orig_backup/events.ts src/events.ts
+--- a/server/src/events.ts	2026-09-04 10:40:59.647418730 +0000
++++ b/server/src/events.ts	2026-09-04 11:03:26.875497169 +0000
+@@ -1,6 +1,6 @@
+ import { query, queryOne } from "./db.js";
+ import { SYMBOL_MAP, SYMBOL_UNIVERSE } from "./symbols.js";
+-import type { ShockEvent, TimedShockEvent } from "./marketData/mockProvider.js";
++import type { ShockEvent, TimedShockEvent } from "./marketdata/mockprovider.js";
+ 
+ export type EventSentiment = "positive" | "negative" | "neutral";
+ export type EventType = "earnings" | "dividend" | "buyback" | "board_meeting" | "rating_change" | "guidance" | "regulatory" | "news";
+diff -ruN '--exclude=node_modules' src_orig_backup/index.ts src/index.ts
+--- a/server/src/index.ts	2026-09-04 10:40:59.647418730 +0000
++++ b/server/src/index.ts	2026-09-04 11:03:26.874845693 +0000
+@@ -1,7 +1,7 @@
+ import express from "express";
+ import cors from "cors";
+ import { initDb } from "./db.js";
+-import { startMarketEngine } from "./marketData/engine.js";
++import { startMarketEngine } from "./marketdata/engine.js";
+ import { seedHistoricalEvents } from "./events.js";
+ import { authRouter } from "./routes/auth.js";
+ import { watchlistRouter } from "./routes/watchlist.js";
+diff -ruN '--exclude=node_modules' src_orig_backup/marketdata/engine.ts src/marketdata/engine.ts
+--- a/server/src/marketdata/engine.ts	2026-09-04 10:40:59.647418730 +0000
++++ b/server/src/marketdata/engine.ts	2026-09-04 11:03:26.876210083 +0000
+@@ -1,5 +1,5 @@
+ import { SYMBOL_UNIVERSE, SYMBOL_MAP, SECTORS, NIFTY50_SYMBOL, type Sector } from "../symbols.js";
+-import { MockProvider, stepMarket, allSimSymbols, fastForwardMarket, resetToBootSnapshot, BOOT_TS } from "./mockProvider.js";
++import { MockProvider, stepMarket, allSimSymbols, fastForwardMarket, resetToBootSnapshot, BOOT_TS } from "./mockprovider.js";
+ import type { MarketDataProvider, Quote } from "./provider.js";
+ import { recordShockEvents, recordTimedShockEvents, deleteEventsSince } from "../events.js";
+ 
+diff -ruN '--exclude=node_modules' src_orig_backup/marketdata/mockprovider.ts src/marketdata/mockprovider.ts
+--- a/server/src/marketdata/mockprovider.ts	2026-09-04 10:40:59.648154417 +0000
++++ b/server/src/marketdata/mockprovider.ts	2026-09-04 11:03:26.875972745 +0000
+@@ -1,6 +1,6 @@
+ import { SYMBOL_UNIVERSE, NIFTY50_META, NIFTY50_SYMBOL, SECTORS, type SymbolMeta, type Sector } from "../symbols.js";
+ import type { MarketDataProvider, Quote } from "./provider.js";
+-import { getDailyHistory } from "../dailyHistory.js";
++import { getDailyHistory } from "../dailyhistory.js";
+ 
+ // Simulator design: a single-factor model, same shape a real quant desk
+ // would use to explain "why did this stock move." Every tick we draw:
+diff -ruN '--exclude=node_modules' src_orig_backup/routes/market.ts src/routes/market.ts
+--- a/server/src/routes/market.ts	2026-09-04 10:40:59.648607339 +0000
++++ b/server/src/routes/market.ts	2026-09-04 11:03:26.877013017 +0000
+@@ -1,8 +1,8 @@
+ import { Router } from "express";
+ import { z } from "zod";
+ import { SYMBOL_UNIVERSE, SECTORS } from "../symbols.js";
+-import { getEngineHealth, listAllSymbolsWithQuotes, getNiftyQuote, getAllSectorIndices, fastForwardHours, resetSimulation } from "../marketData/engine.js";
+-import { getMarketStatus } from "../marketStatus.js";
++import { getEngineHealth, listAllSymbolsWithQuotes, getNiftyQuote, getAllSectorIndices, fastForwardHours, resetSimulation } from "../marketdata/engine.js";
++import { getMarketStatus } from "../marketstatus.js";
+ import { requireAuth } from "../auth.js";
+ 
+ export const marketRouter = Router();
+diff -ruN '--exclude=node_modules' src_orig_backup/routes/stocks.ts src/routes/stocks.ts
+--- a/server/src/routes/stocks.ts	2026-09-04 10:40:59.648607339 +0000
++++ b/server/src/routes/stocks.ts	2026-09-04 11:03:26.876837749 +0000
+@@ -1,12 +1,12 @@
+ import { Router } from "express";
+ import { queryOne } from "../db.js";
+ import { optionalAuth, type AuthedRequest } from "../auth.js";
+-import { getQuote, getNiftyQuote, getSectorIndex } from "../marketData/engine.js";
++import { getQuote, getNiftyQuote, getSectorIndex } from "../marketdata/engine.js";
+ import { SYMBOL_MAP, sectorSymbols } from "../symbols.js";
+ import { getEventsForSymbol, getEventsSince } from "../events.js";
+-import { computeAttentionScore, type BaselineSnapshot } from "../attentionScore.js";
+-import { getMarketStatus } from "../marketStatus.js";
+-import { getDailyHistory, type ChartRange } from "../dailyHistory.js";
++import { computeAttentionScore, type BaselineSnapshot } from "../attentionscore.js";
++import { getMarketStatus } from "../marketstatus.js";
++import { getDailyHistory, type ChartRange } from "../dailyhistory.js";
+ 
+ export const stocksRouter = Router();
+ 
+diff -ruN '--exclude=node_modules' src_orig_backup/routes/watchlist.ts src/routes/watchlist.ts
+--- a/server/src/routes/watchlist.ts	2026-09-04 10:40:59.648607339 +0000
++++ b/server/src/routes/watchlist.ts	2026-09-04 11:03:26.876593167 +0000
+@@ -2,11 +2,11 @@
+ import { z } from "zod";
+ import { query, queryOne } from "../db.js";
+ import { requireAuth, type AuthedRequest } from "../auth.js";
+-import { getQuote, getNiftyQuote, getSectorIndex } from "../marketData/engine.js";
+-import { computeAttentionScore, ATTENTION_TIER_RANK, type BaselineSnapshot } from "../attentionScore.js";
++import { getQuote, getNiftyQuote, getSectorIndex } from "../marketdata/engine.js";
++import { computeAttentionScore, ATTENTION_TIER_RANK, type BaselineSnapshot } from "../attentionscore.js";
+ import { getEventsSince } from "../events.js";
+ import { SYMBOL_MAP } from "../symbols.js";
+-import { getMarketStatus } from "../marketStatus.js";
++import { getMarketStatus } from "../marketstatus.js";
+ 
+ export const watchlistRouter = Router();
+ watchlistRouter.use(requireAuth);
+diff -ruN '--exclude=node_modules' src_orig_backup/seed.ts src/seed.ts
+--- a/server/src/seed.ts	2026-09-04 10:40:59.648607339 +0000
++++ b/server/src/seed.ts	2026-09-04 11:03:26.875062911 +0000
+@@ -1,6 +1,6 @@
+ import bcrypt from "bcryptjs";
+ import { query, queryOne, type UserRow } from "./db.js";
+-import { getQuote, getNiftyQuote, getSectorIndex } from "./marketData/engine.js";
++import { getQuote, getNiftyQuote, getSectorIndex } from "./marketdata/engine.js";
+ import { SYMBOL_MAP } from "./symbols.js";
+ 
+ const DEMO_EMAIL = "demo@investor.app";
