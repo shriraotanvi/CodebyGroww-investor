@@ -1,0 +1,224 @@
+diff --git a/client/src/app.tsx b/client/src/app.tsx
+index c31974e..679758a 100644
+--- a/client/src/app.tsx
++++ b/client/src/app.tsx
+@@ -1,11 +1,11 @@
+ import { Navigate, Route, Routes } from "react-router-dom";
+-import { useAuth } from "./context/AuthContext";
+-import Login from "./pages/Login";
+-import Dashboard from "./pages/Dashboard";
+-import DashboardOverview from "./pages/DashboardOverview";
+-import StockDetail from "./pages/StockDetail";
+-import MarketOverview from "./pages/MarketOverview";
+-import SectorDetail from "./pages/SectorDetail";
++import { useAuth } from "./context/authcontext";
++import Login from "./pages/login";
++import Dashboard from "./pages/dashboard";
++import DashboardOverview from "./pages/dashboardoverview";
++import StockDetail from "./pages/stockdetail";
++import MarketOverview from "./pages/marketoverview";
++import SectorDetail from "./pages/sectordetail";
+ 
+ export default function App() {
+   const { isAuthenticated } = useAuth();
+diff --git a/client/src/components/appshell.tsx b/client/src/components/appshell.tsx
+index b99a120..40ce033 100644
+--- a/client/src/components/appshell.tsx
++++ b/client/src/components/appshell.tsx
+@@ -1,9 +1,9 @@
+ import type { ReactNode } from "react";
+ import { Link } from "react-router-dom";
+-import Sidebar from "./Sidebar";
+-import GlobalSearch from "./GlobalSearch";
+-import ChatBot from "./ChatBot";
+-import { useAuth } from "../context/AuthContext";
++import Sidebar from "./sidebar";
++import GlobalSearch from "./globalsearch";
++import ChatBot from "./chatbot";
++import { useAuth } from "../context/authcontext";
+ 
+ interface Props {
+   children: ReactNode;
+diff --git a/client/src/components/attentioninbox.tsx b/client/src/components/attentioninbox.tsx
+index e3a7c3f..3351d05 100644
+--- a/client/src/components/attentioninbox.tsx
++++ b/client/src/components/attentioninbox.tsx
+@@ -2,7 +2,7 @@ import { useState } from "react";
+ import { useNavigate } from "react-router-dom";
+ import type { WatchlistResponse } from "../lib/api";
+ import { formatAge, formatPct } from "../lib/format";
+-import TierBadge from "./TierBadge";
++import TierBadge from "./tierbadge";
+ 
+ const DEFAULT_VISIBLE = 5;
+ 
+diff --git a/client/src/components/chatbot.tsx b/client/src/components/chatbot.tsx
+index bbc8c6d..a395f6b 100644
+--- a/client/src/components/chatbot.tsx
++++ b/client/src/components/chatbot.tsx
+@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
+ import { MessageCircle, Send, X } from "lucide-react";
+ import { api, type MarketOverview, type WatchlistResponse } from "../lib/api";
+ import { formatPct, formatPrice } from "../lib/format";
+-import { useAuth } from "../context/AuthContext";
++import { useAuth } from "../context/authcontext";
+ 
+ interface Message {
+   role: "user" | "bot";
+diff --git a/client/src/components/sidebar.tsx b/client/src/components/sidebar.tsx
+index 7f863d6..457fa89 100644
+--- a/client/src/components/sidebar.tsx
++++ b/client/src/components/sidebar.tsx
+@@ -1,7 +1,7 @@
+ import { useEffect, useState } from "react";
+ import { Link, useLocation } from "react-router-dom";
+ import { LayoutDashboard, LayoutGrid, LineChart, LogOut } from "lucide-react";
+-import { useAuth } from "../context/AuthContext";
++import { useAuth } from "../context/authcontext";
+ import { api, type MarketOverview } from "../lib/api";
+ import { formatPct, formatPrice } from "../lib/format";
+ 
+diff --git a/client/src/components/watchlisttable.tsx b/client/src/components/watchlisttable.tsx
+index 6ef6514..f3e548a 100644
+--- a/client/src/components/watchlisttable.tsx
++++ b/client/src/components/watchlisttable.tsx
+@@ -1,8 +1,8 @@
+ import { Link } from "react-router-dom";
+ import type { WatchlistItem } from "../lib/api";
+ import { formatAge, formatPct, formatPrice, formatVolume } from "../lib/format";
+-import Sparkline from "./Sparkline";
+-import TierBadge from "./TierBadge";
++import Sparkline from "./sparkline";
++import TierBadge from "./tierbadge";
+ 
+ interface Props {
+   items: WatchlistItem[];
+diff --git a/client/src/main.tsx b/client/src/main.tsx
+index a72fba5..6ad81d2 100644
+--- a/client/src/main.tsx
++++ b/client/src/main.tsx
+@@ -1,8 +1,8 @@
+ import React from "react";
+ import ReactDOM from "react-dom/client";
+ import { BrowserRouter } from "react-router-dom";
+-import App from "./App";
+-import { AuthProvider } from "./context/AuthContext";
++import App from "./app";
++import { AuthProvider } from "./context/authcontext";
+ import "./index.css";
+ 
+ ReactDOM.createRoot(document.getElementById("root")!).render(
+diff --git a/client/src/pages/dashboard.tsx b/client/src/pages/dashboard.tsx
+index 37d6a60..d14b86b 100644
+--- a/client/src/pages/dashboard.tsx
++++ b/client/src/pages/dashboard.tsx
+@@ -1,11 +1,11 @@
+ import { useCallback, useEffect, useRef, useState } from "react";
+ import { api, ApiError, getToken, type WatchlistResponse } from "../lib/api";
+-import AppShell from "../components/AppShell";
+-import AttentionInbox from "../components/AttentionInbox";
+-import WatchlistTable from "../components/WatchlistTable";
+-import AddSymbolModal from "../components/AddSymbolModal";
+-import MarketStrip from "../components/MarketStrip";
+-import DemoControls from "../components/DemoControls";
++import AppShell from "../components/appshell";
++import AttentionInbox from "../components/attentioninbox";
++import WatchlistTable from "../components/watchlisttable";
++import AddSymbolModal from "../components/addsymbolmodal";
++import MarketStrip from "../components/marketstrip";
++import DemoControls from "../components/democontrols";
+ 
+ const POLL_MS = 5000;
+ 
+diff --git a/client/src/pages/dashboardoverview.tsx b/client/src/pages/dashboardoverview.tsx
+index 0b5e2f3..c9b5fe1 100644
+--- a/client/src/pages/dashboardoverview.tsx
++++ b/client/src/pages/dashboardoverview.tsx
+@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
+ import { Link } from "react-router-dom";
+ import { api, type MarketOverview as MarketOverviewData, type WatchlistResponse } from "../lib/api";
+ import { formatPct, formatPrice } from "../lib/format";
+-import AppShell from "../components/AppShell";
+-import Sparkline from "../components/Sparkline";
+-import TierBadge from "../components/TierBadge";
++import AppShell from "../components/appshell";
++import Sparkline from "../components/sparkline";
++import TierBadge from "../components/tierbadge";
+ 
+ // A stat-tile "at a glance" landing page — distinct from the Inbox (which
+ // is deliberately narrow and triage-focused) and from Market (which is the
+diff --git a/client/src/pages/login.tsx b/client/src/pages/login.tsx
+index 44d2ddc..162a456 100644
+--- a/client/src/pages/login.tsx
++++ b/client/src/pages/login.tsx
+@@ -1,7 +1,7 @@
+ import { useState } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { api, ApiError } from "../lib/api";
+-import { useAuth } from "../context/AuthContext";
++import { useAuth } from "../context/authcontext";
+ 
+ export default function Login() {
+   const { login } = useAuth();
+diff --git a/client/src/pages/marketoverview.tsx b/client/src/pages/marketoverview.tsx
+index 5e041e4..45909a4 100644
+--- a/client/src/pages/marketoverview.tsx
++++ b/client/src/pages/marketoverview.tsx
+@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
+ import { Link } from "react-router-dom";
+ import { api, type MarketOverview as MarketOverviewData } from "../lib/api";
+ import { formatPct, formatPrice } from "../lib/format";
+-import Sparkline from "../components/Sparkline";
+-import AppShell from "../components/AppShell";
++import Sparkline from "../components/sparkline";
++import AppShell from "../components/appshell";
+ 
+ // Market home: NIFTY 50, sector performance, and full gainers/losers lists.
+ // Functional-first per current priority — plain lists/cards, no dedicated
+diff --git a/client/src/pages/sectordetail.tsx b/client/src/pages/sectordetail.tsx
+index 2dea079..cfe0cc8 100644
+--- a/client/src/pages/sectordetail.tsx
++++ b/client/src/pages/sectordetail.tsx
+@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
+ import { Link, useParams } from "react-router-dom";
+ import { api } from "../lib/api";
+ import { formatPct, formatPrice } from "../lib/format";
+-import AppShell from "../components/AppShell";
++import AppShell from "../components/appshell";
+ 
+ interface SectorData {
+   sector: string;
+diff --git a/client/src/pages/stockdetail.tsx b/client/src/pages/stockdetail.tsx
+index 3c5a2d3..0abe932 100644
+--- a/client/src/pages/stockdetail.tsx
++++ b/client/src/pages/stockdetail.tsx
+@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from "react";
+ import { Link, useParams } from "react-router-dom";
+ import { api, ApiError, type ChartRange, type StockDetail as StockDetailData } from "../lib/api";
+ import { formatMarketCap, formatPct, formatPrice, formatVolume } from "../lib/format";
+-import Sparkline from "../components/Sparkline";
+-import TierBadge from "../components/TierBadge";
+-import AppShell from "../components/AppShell";
+-import { useAuth } from "../context/AuthContext";
++import Sparkline from "../components/sparkline";
++import TierBadge from "../components/tierbadge";
++import AppShell from "../components/appshell";
++import { useAuth } from "../context/authcontext";
+ 
+ const RANGES: ChartRange[] = ["1D", "1W", "1M", "3M", "6M", "1Y"];
+ 
+diff --git a/netlify.toml b/netlify.toml
+new file mode 100644
+index 0000000..97311d9
+--- /dev/null
++++ b/netlify.toml
+@@ -0,0 +1,9 @@
++[build]
++  base = "client"
++  command = "npm run build"
++  publish = "client/dist"
++
++[[redirects]]
++  from = "/*"
++  to = "/index.html"
++  status = 200
