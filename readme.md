@@ -1,4 +1,4 @@
-# INVESTO₹ — an Indian investing platform with an attention layer
+# INVESTO₹ an Indian investing platform with an attention layer
 
 Every existing watchlist — Groww, Zerodha, Robinhood — shows you every stock you track with equal visual weight and makes *you* do the triage. INVESTO₹'s bet is that a watchlist's real job is to protect your limited attention, not display everything. It's built around one question, asked every time you open it: **"what actually deserves my attention right now?"**
 
