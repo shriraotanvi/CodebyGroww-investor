@@ -2,6 +2,7 @@ import { SYMBOL_UNIVERSE, SYMBOL_MAP, SECTORS, NIFTY50_SYMBOL, type Sector } fro
 import { MockProvider, stepMarket, allSimSymbols, fastForwardMarket, resetToBootSnapshot, BOOT_TS } from "./mockProvider.js";
 import type { MarketDataProvider, Quote } from "./provider.js";
 import { recordShockEvents, recordTimedShockEvents, deleteEventsSince } from "../events.js";
+import { SYMBOL_UNIVERSE, SYMBOL_MAP, SECTORS, NIFTY50_SYMBOL, type Sector } from "../symbols.js";
 
 const ALL_SYMBOLS = allSimSymbols();
 const TICK_MS = 4000;
