@@ -28,7 +28,7 @@ function answer(query: string, overview: MarketOverview | null, watchlist: Watch
   const has = (...words: string[]) => words.some((w) => q.includes(w));
 
   if (has("hello", "hi ", "hey") || q.trim() === "hi") {
-    return "Hey! I can answer basic questions about the market and your watchlist — try one of the suggestions below, or ask about NIFTY, your watchlist, attention scores, or how snooze works.";
+    return "Hey! what do you need assistance with?";
   }
 
   if (has("market open", "market closed", "is the market", "trading hours", "market status")) {
